@@ -1,0 +1,42 @@
+SELECT TABLE_NAME
+     , COLUMN_NAME
+  FROM ALL_TAB_COLUMNS
+
+list = /home/tstream/project.dat
+before_table_name = ""
+clnn_cnt = 0
+are_cnt = 0
+
+
+grep $list | while read -r line
+do
+  table_name = ""
+  column_name = ""
+  table_name = $(echo $line | cut -f 1 '|') ## 테이블명
+  column_name = $(echo $line | cut -f 2 '|') ## 컬럼명
+  
+  
+  if [ $before_table_name == $table_name ] || [ $before_table_name == "" ] 
+  then
+      if [ $column_name != "고객번호" ]
+      then clnn_cnt += 1
+      elif [ $column_name != "계약번호" ]
+      then are_cnt += 1
+      else
+           echo "해당사항없음"
+      fi
+  else
+      echo "$table_name 는 고객번호: $clnn_cnt , 계약번호: $are_cnt 건 존재합니다."
+           clnn_cnt = 0
+           are_cnt = 0
+           
+  if [ clnn_cnt > 0 ]
+  then echo "#@%@#$@%"
+  fi
+  if [ are_cnt > 0 ]
+  then echo "#@$@#$@#"
+  fi
+
+  before_table_name = ""
+  before_table_name = $(echo $line | cut -f 1 '|')
+done
